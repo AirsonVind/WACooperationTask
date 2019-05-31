@@ -50,11 +50,8 @@ MongoClient.connect(url, {useNewUrlParser: true}, (err, client) =>{
 function startServer() {
     let server = express();
     server.listen(2333);
-    server.get('/',function (req,res) {
-        res.send('ok');
-        console.log('server connected');
-    })
-    router.register(server);
+
+    router.info_search(server);
 }
 
 startServer();
