@@ -1,4 +1,3 @@
-
 let insert_many = (db, collection, data, callback) => {
     db.collection(collection).insertMany(data, (err, result) => {
         if(err){
