@@ -5,7 +5,6 @@ const MongoClient = require('mongodb').MongoClient;
 let url = 'mongodb://localhost:27017/test';
 
 
-<<<<<<< HEAD
 
 function ASE(){
 
@@ -30,9 +29,9 @@ const key = Buffer.from('WACooperationTask');
 
 
 let server = express().listen(2333);
-=======
+
 let router = require('./router');
->>>>>>> master
+
 
 MongoClient.connect(url, {useNewUrlParser: true}, (err, client) =>{
     if(err){

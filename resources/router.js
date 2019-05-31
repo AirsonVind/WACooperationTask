@@ -1,5 +1,5 @@
 let bodyParser = require('body-parser');
-let mongo = require('');
+let mongo = require('./mongo');
 let jsonParser = bodyParser.json();
 
 let register = function(server){
