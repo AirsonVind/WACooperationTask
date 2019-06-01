@@ -1,4 +1,5 @@
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const mongo = require('./mongo');
 const jsonParser = bodyParser.json();
 const MongoClient = require('mongodb').MongoClient;
@@ -34,7 +35,7 @@ let router = (server) =>{
                 }else {
                     res.json({
                         "code": -1,
-                        "msg": "账号已存在"
+                        "msg": "账号已存�?"
                     })
                 }
             })
@@ -56,19 +57,119 @@ let router = (server) =>{
                     }else {
                         res.json({
                             "code": -1,
-                            "msg": "密码错误"
+                            "msg": "密码错�??"
                         })
                     }
                 }else {
                     res.json({
                         "code": -1,
-                        "msg": "用户不存在"
+                        "msg": "用户不存�?"
                     })
                 }
             })
         })
-    })
 
+        server.post('/friends', jsonParser, (req, res) => {
+            let body = req.body;
+            mongo.find_one(db, 'users', {'username' : body.username}, (err) => {
+                res.json({
+                    'code': -1,
+                    'msg': err,
+                })
+            }, (result) => {
+                if(!result){
+                    res.json({
+                        'code': -1,
+                        'msg': 'username not exist',
+                    })
+                }else{
+                    let newfriend = body.friend;
+                    mongo.update_one(db, 'users', {'username' : body.username}, {$push:{'friends' : newfriend}}, (err) =>{
+                        res.json({
+                            'code': -1,
+                            'msg': err,
+                        })
+                    }, (result) => {
+                        res.json({
+                            'code': 1,
+                            'msg': 1,
+                        })
+                    })
+                }
+            })
+        })
+
+        server.delete('/friends', jsonParser, (req, res) =>{
+            let body = req.body;
+            mongo.find_one(db, 'users', {'username': body.username}, (err) => {
+                res.json({
+                    'code': -1,
+                    'msg': err,
+                })
+            }, (result) => {
+                if(!result){
+                    res.json({
+                        'code': -1,
+                        'msg': 'username not exist',
+                    })
+                }else{
+                    console.log(result.friends);
+                    let friend = body.friend;
+                    mongo.update_one(db, 'users', {'username': body.username}, {$pull:{'friends': friend}}, (err) => {
+                        res.json({
+                            'code': -1,
+                            'msg': err,
+                        })
+                    }, (result) => {
+                        res.json({
+                            'code': 1,
+                            'msg': 1,
+                        })
+                    })
+                }
+            })
+        })
+
+        server.get('/friends', jsonParser, (req, res) => {
+            let body = req.body;
+            mongo.find_one(db, 'users', {'username': body.username}, (err) => {
+                res.json({
+                    'code': -1,
+                    'msg': err,
+                })
+            }, (result) => {
+                let friends = result.friends;
+                let lastFriend = friends.pop();
+                friends.push(lastFriend);
+                let msg = [{'username': result.username}];
+                console.log(friends);
+                for(let item of friends){
+                    if(item){
+                        console.log(item);
+                        mongo.find_one(db, 'users', {'username': item}, (err) => {
+                            res.json({
+                                'code': -1,
+                                'msg': err,
+                            })
+                        }, (result) => {
+                            console.log(result.username);
+                            msg.push({
+                                'usernsme': result.username,
+                                'phone': result.phone,
+                            })
+                            console.log(msg);
+                            if(result.username === lastFriend){
+                                res.json({
+                                    'code': 1,
+                                    'msg': msg,
+                                })
+                            }
+                        })
+                    }
+                }
+            })
+        })
+    })
 }
 
 

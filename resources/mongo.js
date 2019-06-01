@@ -20,7 +20,7 @@ let delete_one = (db, collection, data, callback_err,callback_ok) => {
     })
 }
 
-let update_one = (db, collection, fliter, data, callback_err,callback_ok) => {
+let update_one = (db, collection, fliter, data, callback_err, callback_ok) => {
     db.collection(collection).updateOne(fliter, data, {upsert: false}, (err, result) => {
         if(err){
             console.log(err);
