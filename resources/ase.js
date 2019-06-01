@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 function ASE(){
     this.Encrypt = (data, key) => {
         let cipher = crypto.createCipher('aes192', key);
