@@ -1,56 +1,77 @@
-let bodyParser = require('body-parser');
-let mongo = require('./mongo');
-let jsonParser = bodyParser.json();
+const bodyParser = require('body-parser');
+const mongo = require('./mongo');
+const jsonParser = bodyParser.json();
+const MongoClient = require('mongodb').MongoClient;
+const url = 'mongodb://localhost:27017/test';
+const ase = require('./ase');
 
-let register = function(server){
-    server.post('/user/reg',jsonParser,function (req,res) {
-        let body = req.body;
-        if (!mongo.find('user',body.username)){
-            mongo.insert('user',body.username);
-            res.status(200).json(
-                {
-                    "code": 1,
-                    "msg": "token XXXXXXXXX"
-                }
-            );
-        } else {
-            res.status().json(
-                {
-                    "code": -1,
-                    "msg": "失败原因"
-                }
-            );
+let router = (server) =>{
+    MongoClient.connect(url, {useNewUrlParser: true}, (err, client) =>{
+        if(err){
+            console.log(err);
+        }else{
+            console.log('connected!');
         }
-    })
-}
-
-let login = function(server){
-    server.post('/user/login',jsonParser,function (req,res) {
-        let body = req.body;
-        if (mongo.find('user',body.username)){
-            res.status(200).json(
-                {
-                    "code": 1,
-                    "msg": 1
-                }
-            );
-        } else {
-            res.status().json(
-                {
+        let db = client.db('mydb');
+        server.post('/user/reg',jsonParser,(req,res) => {
+            let body = req.body;
+            mongo.find_one(db,'users',{"username":body.username},(err) => {
+                res.json({
                     "code": -1,
-                    "msg": "失败原因"
+                    "msg": err
+                })
+            },(result) => {
+                if (result === null){
+                    mongo.insert_many(db,'users',[body], (err) => {
+                        res.json({
+                            "code": -1,
+                            "msg": err
+                        })
+                    },(result) => {
+                        res.json({"code": 1,
+                            "msg": 1})
+                    })
+                }else {
+                    res.json({
+                        "code": -1,
+                        "msg": "账号已存在"
+                    })
                 }
-            );
-        }
+            })
+        })
+        server.post('/user/login',jsonParser,function (req,res) {
+            let body = req.body;
+            mongo.find_one(db,'users',{"username":body.username},(err) => {
+                res.json({
+                    "code": -1,
+                    "msg": err
+                })
+            },(result) => {
+                if (result != null){
+                    if (body.password === result.password){
+                        res.json({
+                            "code": 1,
+                            "msg": "token XXXXXXXXX"
+                        })
+                    }else {
+                        res.json({
+                            "code": -1,
+                            "msg": "密码错误"
+                        })
+                    }
+                }else {
+                    res.json({
+                        "code": -1,
+                        "msg": "用户不存在"
+                    })
+                }
+            })
+        })
     })
+
 }
 
-let info_search = function(server){
-    server.get('/user/info/:username',function (req,res) {
-        let username = req.params.username;
-
-    })
-}
 
 
-module.exports = {register,login,info_search};
+
+module.exports = router;

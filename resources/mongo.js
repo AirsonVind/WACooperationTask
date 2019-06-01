@@ -1,58 +1,59 @@
-let insert_many = (db, collection, data, callback) => {
+let insert_many = (db, collection, data, callback_err,callback_ok) => {
     db.collection(collection).insertMany(data, (err, result) => {
         if(err){
             console.log(err);
+            callback_err(err);
         }else{
-            callback(result);
+            callback_ok(result);
         }
     })
 }
 
-let delete_one = (db, collection, data, callback) => {
+let delete_one = (db, collection, data, callback_err,callback_ok) => {
     db.collection(collection).deleteOne(data, (err, result) => {
         if(err){
             console.log(err);
+            callback_err(err);
         }else{
-            callback(result);
+            callback_ok(result);
         }
     })
 }
 
-let update_one = (db, collection, fliter, data, callback) => {
+let update_one = (db, collection, fliter, data, callback_err,callback_ok) => {
     db.collection(collection).updateOne(fliter, data, {upsert: false}, (err, result) => {
         if(err){
             console.log(err);
+            callback_err(err)
         }else{
-            callback(result);
+            callback_ok(result);
         }
     })
 }
 
-let find_one = (db, collection, data, callback) => {
+let find_one = (db, collection, data, callback_err,callback_ok) => {
     db.collection(collection).findOne(data, (err, result) => {
         if(err){
             console.log(err);
+            callback_err(err);
         }else{
             console.log('found');
-            callback(result);
+            callback_ok(result);
         }
     })
 }
 
 
-let find_all = (db, collection, data, callback) => {
+let find_all = (db, collection, data, callback_err,callback_ok) => {
     db.collection(collection).find(data).toArray((err, result) => {
         if(err){
             console.log(err);
+            callback_err(err);
         }else{
             console.log('found-all');
-            callback(result);
+            callback_ok(result);
         }
     })
 }
 
-module.exports.insert_many = insert_many;
-module.exports.delete_one = delete_one;
-module.exports.update_one = update_one;
-module.exports.find_one = find_one;
-module.exports.find_all = find_all;
+module.exports = {insert_many,delete_one,update_one,find_one,find_all};
