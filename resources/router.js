@@ -169,6 +169,57 @@ let router = (server) =>{
                 }
             })
         })
+
+        server.post('/chat', jsonParser, (req, res) => {
+            let body = req.body;
+            mongo.insert_many(db, 'new_msg', [body], (err) => {
+                res.json({
+                    'code': -1,
+                    'msg': err,
+                })
+            }, (result) => {
+                res.json({
+                    'code': 1,
+                    'msg': 1,
+                })
+                console.log(result);
+            })
+        })
+
+        server.get('/chat', jsonParser, (req, res) => {
+            let body = req.body;
+            mongo.find_all(db, 'new_msg', {'receiver': body.username}, (err) => {
+                res.json({
+                    'code': -1,
+                    'msg': err,
+                })
+            }, (result) => {
+                console.log(result);
+                console.log(typeof result);
+                res.json({
+                    'code': 1,
+                    'msg': result,
+                })
+                if(result.lenth !== 0){
+                    mongo.insert_many(db, 'msg', result, (err) => {
+                        res.json({
+                            'code': -1,
+                            'msg': err,
+                        })
+                    }, (result) => {
+                        console.log(result);
+                    })
+                }
+            })
+            mongo.delete_many(db, 'new_msg', {'receiver': body.username}, (err) => {
+                res.json({
+                    'code': -1,
+                    'msg': err,
+                })
+            }, (result) => {
+                console.log(result);
+            })
+        })
     })
 }
 

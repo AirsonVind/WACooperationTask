@@ -20,6 +20,17 @@ let delete_one = (db, collection, data, callback_err,callback_ok) => {
     })
 }
 
+let delete_many = (db, collection, data, callback_err,callback_ok) => {
+    db.collection(collection).deleteMany(data, (err, result) => {
+        if(err){
+            console.log(err);
+            callback_err(err);
+        }else{
+            callback_ok(result);
+        }
+    })
+}
+
 let update_one = (db, collection, fliter, data, callback_err, callback_ok) => {
     db.collection(collection).updateOne(fliter, data, {upsert: false}, (err, result) => {
         if(err){
@@ -56,4 +67,4 @@ let find_all = (db, collection, data, callback_err,callback_ok) => {
     })
 }
 
-module.exports = {insert_many,delete_one,update_one,find_one,find_all};
+module.exports = {insert_many, delete_one, delete_many, update_one, find_one, find_all};

@@ -1,6 +1,5 @@
 const express = require('express');
 const router = require('./router');
-const cookieParser = require('cookie-parser');
 const session = require('express-session');
 
 
