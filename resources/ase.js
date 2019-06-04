@@ -8,7 +8,7 @@ function ASE(){
         return crypted;
     }
 
-    this.Decrypt = (encrypt, key, authTag) => {
+    this.Decrypt = (encrypt, key) => {
         let decipher = crypto.createDecipher('aes192', key);
         let decrypted = decipher.update(encrypt, 'hex', 'utf8');
         decrypted = decrypted + decipher.final('utf8');
