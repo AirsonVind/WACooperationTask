@@ -74,35 +74,6 @@ let router = (server) =>{
             })
         })
 
-        server.post('/friends', jsonParser, (req, res) => {
-            let body = req.body;
-            mongo.find_one(db, 'users', {'username' : body.username}, (err) => {
-                res.json({
-                    'code': -1,
-                    'msg': err,
-                })
-            }, (result) => {
-                if(!result){
-                    res.json({
-                        'code': -1,
-                        'msg': 'username not exist',
-                    })
-                }else{
-                    let newfriend = body.friend;
-                    mongo.update_one(db, 'users', {'username' : body.username}, {$push:{'friends' : newfriend}}, (err) =>{
-                        res.json({
-                            'code': -1,
-                            'msg': err,
-                        })
-                    }, (result) => {
-                        res.json({
-                            'code': 1,
-                            'msg': 1,
-                        })
-                    })
-                }
-            })
-        })
         server.get('/user/info/:username',jsonParser,(req,res) => {
             let username = req.params.username;
             let body = req.body;
@@ -170,6 +141,35 @@ let router = (server) =>{
                     res.json({
                         "code": -1,
                         "msg": "密码错误"
+                    })
+                }
+            })
+        })
+        server.post('/friends', jsonParser, (req, res) => {
+            let body = req.body;
+            mongo.find_one(db, 'users', {'username' : body.username}, (err) => {
+                res.json({
+                    'code': -1,
+                    'msg': err,
+                })
+            }, (result) => {
+                if(!result){
+                    res.json({
+                        'code': -1,
+                        'msg': 'username not exist',
+                    })
+                }else{
+                    let newfriend = body.friend;
+                    mongo.update_one(db, 'users', {'username' : body.username}, {$push:{'friends' : newfriend}}, (err) =>{
+                        res.json({
+                            'code': -1,
+                            'msg': err,
+                        })
+                    }, (result) => {
+                        res.json({
+                            'code': 1,
+                            'msg': 1,
+                        })
                     })
                 }
             })
