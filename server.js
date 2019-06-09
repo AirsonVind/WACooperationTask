@@ -1,5 +1,5 @@
 const express = require('express');
-const router = require('./router');
+const router = require('./apps/router');
 const session = require('express-session');
 
 let server = express();

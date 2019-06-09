@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 
-function ASE(){
+function AES(){
     this.Encrypt = (data, key) => {
         let cipher = crypto.createCipher('aes192', key);
         let crypted = cipher.update(data, 'utf8', 'hex');
@@ -16,7 +16,7 @@ function ASE(){
     }
 }
 
-const ase = new ASE();
+const aes = new AES();
 const key = Buffer.from('WACooperationTask');
 
-module.exports = {ase,key};
+module.exports = {aes,key};
