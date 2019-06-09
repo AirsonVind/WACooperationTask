@@ -1,10 +1,10 @@
-const bodyParser = require('body-parser');
 const mongo = require('./mongo/mongo');
-const jsonParser = bodyParser.json();
 const MongoClient = require('mongodb').MongoClient;
 const url = 'mongodb://localhost:27017/test';
+const handler = require('./controllers/handler');
+const bodyParser = require('body-parser');
+const jsonParser = bodyParser.json();
 const AES = require('./aes');
-
 
 let router = (server) =>{
     MongoClient.connect(url, {useNewUrlParser: true}, (err, client) =>{
@@ -74,25 +74,17 @@ let router = (server) =>{
 
         server.get('/user/info/:username',jsonParser,async (req,res) => {
             let username = req.params.username;
-            let body = req.body;
             try {
                 let result = await mongo.find_one(db,'users',{"username":username});
                 if (result != null){
-                    if (body.password === result.password){
-                        res.status(200).json({
-                            "code": 1,
-                            "msg": {
-                                "username": result.username,
-                                "phone": result.phone,
-                                "signature": result.signature
-                            }
-                        })
-                    }else {
-                        res.status(200).json({
-                            "code": -1,
-                            "msg": "Wrong password"
-                        })
-                    }
+                    res.status(200).json({
+                        "code": 1,
+                        "msg": {
+                            "username": result.username,
+                            "phone": result.phone,
+                            "signature": result.signature
+                        }
+                    })
                 }else {
                     res.status(200).json({
                         "code": -1,
@@ -270,6 +262,7 @@ let router = (server) =>{
                         'msg': 'please log in first',
                     })
                 } else {
+                    body.sender = username;
                     await mongo.insert_many(db, 'new_msg', [body]);
                     await res.status(200).json({
                         'code': 1,
